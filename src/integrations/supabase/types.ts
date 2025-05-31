@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      agent_logs: {
+        Row: {
+          agent_name: string
+          created_at: string
+          id: string
+          input_data: Json | null
+          response_data: Json | null
+          user_id: string
+        }
+        Insert: {
+          agent_name: string
+          created_at?: string
+          id?: string
+          input_data?: Json | null
+          response_data?: Json | null
+          user_id: string
+        }
+        Update: {
+          agent_name?: string
+          created_at?: string
+          id?: string
+          input_data?: Json | null
+          response_data?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       Profiles: {
         Row: {
           "academic stream chosen in class 12": string | null
