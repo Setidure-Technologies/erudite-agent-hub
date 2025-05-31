@@ -24,6 +24,7 @@ export const AgentLayout = ({
   const [response, setResponse] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [agentLogs, setAgentLogs] = useState<any[]>([]);
+  const [currentInput, setCurrentInput] = useState<string>('');
   const { user } = useAuth();
 
   useEffect(() => {
@@ -59,13 +60,17 @@ export const AgentLayout = ({
         .eq('user_id', user?.id)
         .eq('agent_name', title)
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(10);
 
       if (error) throw error;
       setAgentLogs(data || []);
     } catch (error) {
       console.error('Error fetching agent logs:', error);
     }
+  };
+  
+  const handleSelectInputFromHistory = (input: string) => {
+    setCurrentInput(input);
   };
 
   return (
@@ -89,6 +94,8 @@ export const AgentLayout = ({
               profile={profile}
               onResponse={setResponse}
               onLogsUpdate={fetchAgentLogs}
+              input={currentInput}
+              setInput={setCurrentInput}
             />
 
             <AgentResponse response={response} />
@@ -97,7 +104,10 @@ export const AgentLayout = ({
           </CardContent>
         </Card>
 
-        <AgentHistory agentLogs={agentLogs} />
+        <AgentHistory 
+          agentLogs={agentLogs} 
+          onSelectInput={handleSelectInputFromHistory}
+        />
       </div>
     </div>
   );
