@@ -5,7 +5,7 @@ const InterviewCoach = () => {
   return (
     <AgentLayout
       title="Interview Coach"
-      webhookUrl="https://n8n.erudites.in/webhook/interview-coach"
+      webhookUrl="https://n8n.erudites.in/webhook-test/interview-coach"
       inputPlaceholder="Enter interview mode (online/offline) and job description..."
     />
   );
