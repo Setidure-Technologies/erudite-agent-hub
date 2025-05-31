@@ -34,6 +34,8 @@ const UploadResume = () => {
     try {
       const filePath = `resumes/${user.id}/resume.pdf`;
       
+      console.log('Uploading file to path:', filePath);
+      
       // Upload file to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('resumes')
@@ -47,10 +49,11 @@ const UploadResume = () => {
         .getPublicUrl(filePath);
 
       const resumeUrl = urlData.publicUrl;
+      console.log('Resume uploaded to URL:', resumeUrl);
 
       // Update profile with resume URL
       const { error: updateError } = await supabase
-        .from('profiles')
+        .from('Profiles')
         .upsert({
           user_id: user.id,
           resume_url: resumeUrl,
@@ -59,6 +62,11 @@ const UploadResume = () => {
       if (updateError) throw updateError;
 
       // Call verify-profile webhook
+      console.log('Calling verify-profile webhook with:', {
+        user_id: user.id,
+        resume_url: resumeUrl,
+      });
+
       const webhookResponse = await fetch('https://n8n.erudites.in/webhook-test/verify-profile', {
         method: 'POST',
         headers: {
@@ -71,8 +79,12 @@ const UploadResume = () => {
       });
 
       if (!webhookResponse.ok) {
+        console.error('Webhook response not ok:', webhookResponse.status);
         throw new Error('Failed to trigger profile verification');
       }
+
+      const webhookResult = await webhookResponse.json();
+      console.log('Webhook response:', webhookResult);
 
       toast({
         title: "Success",

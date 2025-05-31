@@ -37,7 +37,7 @@ export const AgentLayout = ({
   const fetchProfile = async () => {
     try {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('Profiles')
         .select('*')
         .eq('user_id', user?.id)
         .single();
@@ -87,6 +87,8 @@ export const AgentLayout = ({
         profile: profile,
       };
 
+      console.log(`Making request to ${webhookUrl} with data:`, requestData);
+
       const webhookResponse = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
@@ -100,6 +102,7 @@ export const AgentLayout = ({
       }
 
       const responseData = await webhookResponse.json();
+      console.log('Webhook response:', responseData);
       setResponse(responseData);
 
       // Save to agent logs
