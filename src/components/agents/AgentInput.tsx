@@ -70,47 +70,20 @@ export const AgentInput = ({
       });
       
       const fullUrl = `${webhookUrl}?${queryParams.toString()}`;
-      console.log('Full URL:', fullUrl);
       
       const webhookResponse = await fetch(fullUrl, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'Cache-Control': 'no-cache',
         },
       });
 
-      console.log('Response status:', webhookResponse.status);
-      console.log('Response headers:', Object.fromEntries(webhookResponse.headers.entries()));
-
       if (!webhookResponse.ok) {
-        throw new Error(`Webhook request failed: ${webhookResponse.status} ${webhookResponse.statusText}`);
+        throw new Error(`Webhook request failed: ${webhookResponse.status}`);
       }
 
-      // Check if response has content
-      const contentLength = webhookResponse.headers.get('content-length');
-      console.log('Content length:', contentLength);
-
-      if (contentLength === '0') {
-        throw new Error('Webhook returned empty response. Check your n8n workflow has a "Respond to Webhook" node.');
-      }
-
-      const responseText = await webhookResponse.text();
-      console.log('Raw response text:', responseText);
-
-      if (!responseText || responseText.trim() === '') {
-        throw new Error('Webhook returned empty response body. Make sure your n8n workflow returns data.');
-      }
-
-      let responseData;
-      try {
-        responseData = JSON.parse(responseText);
-      } catch (parseError) {
-        console.log('Response is not JSON, using as text:', responseText);
-        responseData = { message: responseText };
-      }
-
-      console.log('Parsed response data:', responseData);
+      const responseData = await webhookResponse.json();
+      console.log('Webhook response:', responseData);
       onResponse(responseData);
 
       // Save to agent logs
@@ -135,7 +108,7 @@ export const AgentInput = ({
       console.error('Error running agent:', error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to run agent. Please try again.",
+        description: "Failed to run agent. Please try again.",
         variant: "destructive",
       });
     } finally {
