@@ -74,7 +74,8 @@ export const ChatInterface = ({
         profile: profile,
       };
 
-      console.log(`Making request to ${webhookUrl} with data:`, requestData);
+      console.log(`Making request to PRODUCTION webhook: ${webhookUrl}`);
+      console.log('Request data:', requestData);
       
       const queryParams = new URLSearchParams({
         user_id: user?.id || '',
@@ -83,20 +84,34 @@ export const ChatInterface = ({
       });
       
       const fullUrl = `${webhookUrl}?${queryParams.toString()}`;
+      console.log('Full URL:', fullUrl);
       
       const webhookResponse = await fetch(fullUrl, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
+          'Cache-Control': 'no-cache',
         },
       });
 
+      console.log('Response status:', webhookResponse.status);
+      console.log('Response headers:', Object.fromEntries(webhookResponse.headers.entries()));
+
       if (!webhookResponse.ok) {
-        throw new Error(`Webhook request failed: ${webhookResponse.status}`);
+        throw new Error(`Webhook request failed: ${webhookResponse.status} ${webhookResponse.statusText}`);
       }
 
-      const responseData = await webhookResponse.json();
-      console.log('Webhook response:', responseData);
+      const responseText = await webhookResponse.text();
+      console.log('Raw response text:', responseText);
+
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+        console.log('Parsed response data:', responseData);
+      } catch (parseError) {
+        console.error('Failed to parse JSON response:', parseError);
+        responseData = { content: responseText };
+      }
 
       // Extract the actual response content
       let botResponseContent = '';
@@ -110,9 +125,13 @@ export const ChatInterface = ({
         botResponseContent = responseData.content;
       } else if (responseData.message) {
         botResponseContent = responseData.message;
+      } else if (responseData.text) {
+        botResponseContent = responseData.text;
       } else {
         botResponseContent = JSON.stringify(responseData, null, 2);
       }
+
+      console.log('Final bot response content:', botResponseContent);
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -139,7 +158,7 @@ export const ChatInterface = ({
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
-        content: 'Sorry, I encountered an error. Please try again.',
+        content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`,
         timestamp: new Date()
       };
 
