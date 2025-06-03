@@ -31,7 +31,6 @@ export const ChatInterface = ({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sessionId] = useState(() => Date.now().toString() + Math.random().toString(36).substr(2, 9));
   const { user } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -69,22 +68,33 @@ export const ChatInterface = ({
     setLoading(true);
 
     try {
-      // Create URL with query parameters for GET request
-      const queryParams = new URLSearchParams({
-        message: currentInput,
-        user: user?.id || '',
-        session: sessionId,
-      });
-      
-      const fullUrl = `${webhookUrl}?${queryParams.toString()}`;
-      
-      console.log(`Making GET request to: ${fullUrl}`);
+      const requestData = {
+        user_id: user?.id,
+        input: currentInput,
+        profile: profile,
+      };
 
-      const webhookResponse = await fetch(fullUrl, {
-        method: 'GET',
+      console.log(`Making request to webhook: ${webhookUrl}`);
+      console.log('Request data:', requestData);
+      
+      // Try form-encoded to avoid CORS preflight
+      const formData = new FormData();
+      formData.append('user_id', user?.id || '');
+      formData.append('input', currentInput);
+      formData.append('profile', JSON.stringify(profile || {}));
+
+      console.log('FormData contents:');
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
+      const webhookResponse = await fetch(webhookUrl, {
+        method: 'POST',
+        body: formData,
       });
 
       console.log('Response status:', webhookResponse.status);
+      console.log('Response headers:', Object.fromEntries(webhookResponse.headers.entries()));
 
       if (!webhookResponse.ok) {
         throw new Error(`Webhook request failed: ${webhookResponse.status} ${webhookResponse.statusText}`);
@@ -99,24 +109,23 @@ export const ChatInterface = ({
         console.log('Parsed response data:', responseData);
       } catch (parseError) {
         console.error('Failed to parse JSON response:', parseError);
-        // If it's not JSON, treat the raw text as the response
-        responseData = { output: responseText };
+        responseData = { content: responseText };
       }
 
-      // Extract the actual response content - prioritize 'output' field
+      // Extract the actual response content
       let botResponseContent = '';
-      if (responseData.output) {
+      if (typeof responseData === 'string') {
+        botResponseContent = responseData;
+      } else if (responseData.output) {
         botResponseContent = responseData.output;
       } else if (responseData.response) {
         botResponseContent = responseData.response;
-      } else if (responseData.message) {
-        botResponseContent = responseData.message;
       } else if (responseData.content) {
         botResponseContent = responseData.content;
+      } else if (responseData.message) {
+        botResponseContent = responseData.message;
       } else if (responseData.text) {
         botResponseContent = responseData.text;
-      } else if (typeof responseData === 'string') {
-        botResponseContent = responseData;
       } else {
         botResponseContent = JSON.stringify(responseData, null, 2);
       }
@@ -133,12 +142,6 @@ export const ChatInterface = ({
       setMessages(prev => [...prev, botMessage]);
 
       // Save to agent logs
-      const requestData = {
-        user_id: user?.id,
-        input: currentInput,
-        profile: profile,
-      };
-
       await supabase
         .from('agent_logs')
         .insert({
@@ -155,7 +158,7 @@ export const ChatInterface = ({
       
       // Check for CORS-related errors
       if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-        errorContent = 'Connection error: Unable to reach the interview coach service. This might be a temporary network issue. Please try again.';
+        errorContent = 'Connection error: Unable to reach the interview coach service. This might be a temporary network issue or CORS configuration problem. Please try again.';
       }
       
       const errorMessage: Message = {
