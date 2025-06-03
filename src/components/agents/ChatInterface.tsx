@@ -77,21 +77,14 @@ export const ChatInterface = ({
       console.log(`Making request to PRODUCTION webhook: ${webhookUrl}`);
       console.log('Request data:', requestData);
       
-      const queryParams = new URLSearchParams({
-        user_id: user?.id || '',
-        input: currentInput,
-        profile: JSON.stringify(profile || {}),
-      });
-      
-      const fullUrl = `${webhookUrl}?${queryParams.toString()}`;
-      console.log('Full URL:', fullUrl);
-      
-      const webhookResponse = await fetch(fullUrl, {
-        method: 'GET',
+      const webhookResponse = await fetch(webhookUrl, {
+        method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Cache-Control': 'no-cache',
         },
+        body: JSON.stringify(requestData),
       });
 
       console.log('Response status:', webhookResponse.status);
