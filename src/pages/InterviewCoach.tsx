@@ -41,7 +41,7 @@ const InterviewCoach = () => {
       
       <ChatInterface
         title="Interview Coach"
-        webhookUrl="https://n8n.erudites.in/webhook/interview-coach"
+        webhookUrl="https://n8n.erudites.in/webhook-test/interview-coach"
         initialMessage="Hello! I'm your Interview Coach. I'm here to help you prepare for your upcoming interviews. I can help you with:
 
 • Mock interview practice
