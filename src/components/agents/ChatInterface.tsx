@@ -74,17 +74,23 @@ export const ChatInterface = ({
         profile: profile,
       };
 
-      console.log(`Making request to PRODUCTION webhook: ${webhookUrl}`);
+      console.log(`Making request to webhook: ${webhookUrl}`);
       console.log('Request data:', requestData);
       
+      // Try form-encoded to avoid CORS preflight
+      const formData = new FormData();
+      formData.append('user_id', user?.id || '');
+      formData.append('input', currentInput);
+      formData.append('profile', JSON.stringify(profile || {}));
+
+      console.log('FormData contents:');
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
       const webhookResponse = await fetch(webhookUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Cache-Control': 'no-cache',
-        },
-        body: JSON.stringify(requestData),
+        body: formData,
       });
 
       console.log('Response status:', webhookResponse.status);
@@ -148,10 +154,17 @@ export const ChatInterface = ({
     } catch (error) {
       console.error('Error sending message:', error);
       
+      let errorContent = `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`;
+      
+      // Check for CORS-related errors
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        errorContent = 'Connection error: Unable to reach the interview coach service. This might be a temporary network issue or CORS configuration problem. Please try again.';
+      }
+      
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
-        content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`,
+        content: errorContent,
         timestamp: new Date()
       };
 
