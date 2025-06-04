@@ -3,33 +3,74 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 import { 
   Home, 
   User, 
   Upload, 
-  Bot, 
+  Settings,
   BarChart3, 
   Briefcase, 
   Target,
   Menu,
   X,
-  LogOut
+  LogOut,
+  Shield,
+  BookOpen,
+  Users
 } from 'lucide-react';
 
-const navigation = [
-  { name: 'Home', href: '/', icon: Home },
-  { name: 'Profile', href: '/profile', icon: User },
-  { name: 'Upload Resume', href: '/upload-resume', icon: Upload },
-  { name: 'Verify Profile', href: '/verify-profile', icon: Bot },
-  { name: 'Skill Gap Analysis', href: '/analyze-skill-gap', icon: BarChart3 },
-  { name: 'Job Recommender', href: '/recommend-jobs', icon: Briefcase },
-  { name: 'Interview Coach', href: '/interview-coach', icon: Target },
-];
-
-export const Sidebar = () => {
+const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { userRole, accessibleAgents, hasAccess } = useRoleAccess();
+
+  const getNavigationItems = () => {
+    const baseNavigation = [
+      { name: 'Home', href: '/', icon: Home },
+      { name: 'Profile', href: '/profile', icon: User },
+    ];
+
+    const roleSpecificItems = [];
+
+    if (userRole?.name === 'admin') {
+      roleSpecificItems.push(
+        { name: 'Admin Dashboard', href: '/admin-dashboard', icon: Shield },
+        { name: 'Admin Panel', href: '/admin', icon: Settings },
+        { name: 'Teacher View', href: '/teacher-dashboard', icon: BookOpen },
+        { name: 'Student View', href: '/student-dashboard', icon: Users },
+      );
+    } else if (userRole?.name === 'teacher') {
+      roleSpecificItems.push(
+        { name: 'Teacher Dashboard', href: '/teacher-dashboard', icon: BookOpen },
+      );
+    } else if (userRole?.name === 'student') {
+      roleSpecificItems.push(
+        { name: 'Student Dashboard', href: '/student-dashboard', icon: Users },
+      );
+    }
+
+    // Add accessible agent routes
+    const agentItems = accessibleAgents.map(agent => {
+      const iconMap: Record<string, any> = {
+        'Upload': Upload,
+        'BarChart3': BarChart3,
+        'Briefcase': Briefcase,
+        'Target': Target,
+      };
+      
+      return {
+        name: agent.name,
+        href: agent.route,
+        icon: iconMap[agent.icon] || Settings
+      };
+    });
+
+    return [...baseNavigation, ...roleSpecificItems, ...agentItems];
+  };
+
+  const navigation = getNavigationItems();
 
   return (
     <>
@@ -60,10 +101,15 @@ export const Sidebar = () => {
             <div className="text-sm text-gray-600">
               {user?.email}
             </div>
+            {userRole && (
+              <div className="text-xs text-blue-600 font-medium">
+                {userRole.name.charAt(0).toUpperCase() + userRole.name.slice(1)}
+              </div>
+            )}
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2">
+          <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
               return (
@@ -110,3 +156,5 @@ export const Sidebar = () => {
     </>
   );
 };
+
+export { Sidebar };
