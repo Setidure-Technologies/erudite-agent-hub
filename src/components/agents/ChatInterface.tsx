@@ -79,7 +79,7 @@ export const ChatInterface = ({
       console.log('Request data:', requestData);
       console.log('DEBUGGING - Actual webhook URL being used:', webhookUrl);
       
-      // Try form-encoded to avoid CORS preflight
+      // Use FormData for POST request
       const formData = new FormData();
       formData.append('user_id', user?.id || '');
       formData.append('input', currentInput);
