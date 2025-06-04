@@ -90,7 +90,12 @@ export const ChatInterface = ({
         console.log(`${key}: ${value}`);
       }
 
-      const webhookResponse = await fetch(webhookUrl, {
+      // TEMPORARY DEBUG: Force a different URL to test
+      const actualUrl = webhookUrl.includes('debug-123') ? webhookUrl : 'https://n8n.erudites.in/webhook-test/interview-coach-debug-123';
+      console.log('FORCE DEBUG - Original URL:', webhookUrl);
+      console.log('FORCE DEBUG - Using URL:', actualUrl);
+      
+      const webhookResponse = await fetch(actualUrl, {
         method: 'POST',
         body: formData,
       });
