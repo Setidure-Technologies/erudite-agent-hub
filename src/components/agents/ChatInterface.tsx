@@ -28,6 +28,7 @@ export const ChatInterface = ({
   initialMessage = "Hello! I'm your Interview Coach. How can I help you prepare for your interview today?",
   profile 
 }: ChatInterfaceProps) => {
+  console.log('ChatInterface received props:', { title, webhookUrl, profile });
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);

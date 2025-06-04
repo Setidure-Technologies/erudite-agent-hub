@@ -16,21 +16,28 @@ const InterviewCoach = () => {
 
   const fetchProfile = async () => {
     try {
+      console.log('Fetching profile for user:', user?.id);
       const { data, error } = await supabase
         .from('Profiles')
         .select('*')
         .eq('user_id', user?.id)
         .single();
 
+      console.log('Profile fetch result:', { data, error });
+
       if (error && error.code !== 'PGRST116') {
         throw error;
       }
 
       setProfile(data);
+      console.log('Profile set to:', data);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
   };
+
+  const webhookUrl = "https://n8n.erudites.in/webhook-test/interview-coach-debug-123";
+  console.log('InterviewCoach component - webhookUrl:', webhookUrl);
 
   return (
     <div className="container mx-auto p-6">
@@ -41,7 +48,7 @@ const InterviewCoach = () => {
       
       <ChatInterface
         title="Interview Coach"
-        webhookUrl="https://n8n.erudites.in/webhook-test/interview-coach-debug-123"
+        webhookUrl={webhookUrl}
         initialMessage="Hello! I'm your Interview Coach. I'm here to help you prepare for your upcoming interviews. I can help you with:
 
 • Mock interview practice
