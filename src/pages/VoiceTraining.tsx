@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Mic, Square, Play, Volume2, MessageSquare } from 'lucide-react';
+import { getScoreBadgeVariant } from '@/lib/getScoreBadgeVariant';
 
 export const getScoreBadgeVariant = (score: number | null | undefined) => {
   if (score === null || score === undefined) return "secondary";
