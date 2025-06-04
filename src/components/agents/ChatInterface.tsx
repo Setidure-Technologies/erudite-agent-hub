@@ -114,7 +114,26 @@ export const ChatInterface = ({
 
       // Extract the actual response content
       let botResponseContent = '';
-      if (typeof responseData === 'string') {
+      
+      // Handle array responses (like [{"output": "..."}])
+      if (Array.isArray(responseData) && responseData.length > 0) {
+        const firstItem = responseData[0];
+        if (typeof firstItem === 'string') {
+          botResponseContent = firstItem;
+        } else if (firstItem.output) {
+          botResponseContent = firstItem.output;
+        } else if (firstItem.response) {
+          botResponseContent = firstItem.response;
+        } else if (firstItem.content) {
+          botResponseContent = firstItem.content;
+        } else if (firstItem.message) {
+          botResponseContent = firstItem.message;
+        } else if (firstItem.text) {
+          botResponseContent = firstItem.text;
+        } else {
+          botResponseContent = JSON.stringify(firstItem, null, 2);
+        }
+      } else if (typeof responseData === 'string') {
         botResponseContent = responseData;
       } else if (responseData.output) {
         botResponseContent = responseData.output;
