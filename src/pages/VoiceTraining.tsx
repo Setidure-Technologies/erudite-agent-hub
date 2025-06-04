@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Mic, Square, Play, Volume2, MessageSquare } from 'lucide-react';
+import { getScoreBadgeVariant } from '@/lib/getScoreBadgeVariant';
 
 const VoiceTraining = () => {
   const { user } = useAuth();
@@ -184,12 +185,6 @@ const VoiceTraining = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const getScoreBadgeVariant = (score: number | null) => {
-    if (!score) return "secondary";
-    if (score >= 80) return "default";
-    if (score >= 60) return "secondary";
-    return "destructive";
-  };
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
