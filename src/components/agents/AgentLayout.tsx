@@ -36,19 +36,23 @@ export const AgentLayout = ({
 
   const fetchProfile = async () => {
     try {
+      console.log('AgentLayout - Fetching profile for user:', user?.id);
       const { data, error } = await supabase
         .from('Profiles')
         .select('*')
         .eq('user_id', user?.id)
         .single();
 
+      console.log('AgentLayout - Profile fetch result:', { data, error });
+
       if (error && error.code !== 'PGRST116') {
         throw error;
       }
 
       setProfile(data);
+      console.log('AgentLayout - Profile set to:', data);
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('AgentLayout - Error fetching profile:', error);
     }
   };
 

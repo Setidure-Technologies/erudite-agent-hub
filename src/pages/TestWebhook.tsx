@@ -5,7 +5,7 @@ const TestWebhook = () => {
   const [result, setResult] = useState('');
 
   const testWebhook = async () => {
-    const testUrl = "https://n8n.erudites.in/webhook-test/interview-coach-debug-123";
+    const testUrl = "https://n8n.erudites.in/webhook-test/interview-coach";
     console.log('Testing webhook URL:', testUrl);
     
     try {

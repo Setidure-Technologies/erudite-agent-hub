@@ -62,27 +62,33 @@ export const AgentInput = ({
 
       console.log(`Making request to ${webhookUrl} with data:`, requestData);
       
-      // Create URL with query parameters for GET request
-      const queryParams = new URLSearchParams({
-        user_id: user?.id || '',
-        input: input,
-        profile: JSON.stringify(profile || {}),
-      });
+      // Use POST request with FormData (consistent with ChatInterface)
+      const formData = new FormData();
+      formData.append('user_id', user?.id || '');
+      formData.append('input', input);
+      formData.append('profile', JSON.stringify(profile || {}));
       
-      const fullUrl = `${webhookUrl}?${queryParams.toString()}`;
-      
-      const webhookResponse = await fetch(fullUrl, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
+      const webhookResponse = await fetch(webhookUrl, {
+        method: 'POST',
+        body: formData,
       });
 
       if (!webhookResponse.ok) {
         throw new Error(`Webhook request failed: ${webhookResponse.status}`);
       }
 
-      const responseData = await webhookResponse.json();
+      const responseText = await webhookResponse.text();
+      console.log('Raw response text:', responseText);
+
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+        console.log('Parsed response data:', responseData);
+      } catch (parseError) {
+        console.error('Failed to parse JSON response:', parseError);
+        responseData = { content: responseText };
+      }
+
       console.log('Webhook response:', responseData);
       onResponse(responseData);
 

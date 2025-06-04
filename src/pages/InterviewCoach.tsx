@@ -36,7 +36,7 @@ const InterviewCoach = () => {
     }
   };
 
-  const webhookUrl = "https://n8n.erudites.in/webhook-test/interview-coach-debug-123";
+  const webhookUrl = "https://n8n.erudites.in/webhook-test/interview-coach";
   console.log('InterviewCoach component - webhookUrl:', webhookUrl);
 
   return (
