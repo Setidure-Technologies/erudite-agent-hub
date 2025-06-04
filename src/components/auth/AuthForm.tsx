@@ -1,10 +1,12 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,13 +14,14 @@ export const AuthForm = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const result = isLogin 
+      const result = isLogin
         ? await signIn(email, password)
         : await signUp(email, password);
 
@@ -33,6 +36,38 @@ export const AuthForm = () => {
           title: "Success",
           description: "Please check your email to confirm your account.",
         });
+      } else {
+        // On successful login, fetch user profile and redirect based on role
+        const userId = result.data?.user?.id;
+        if (isLogin && userId) {
+          const { data: profile } = await supabase
+            .from('Profiles')
+            .select(`*, role:roles(id, name)`)
+            .eq('user_id', userId)
+            .single();
+
+          let roleName = profile?.role?.name as string | undefined;
+
+          if (!roleName && profile?.role_id) {
+            const { data: roleData } = await supabase
+              .from('roles')
+              .select('name')
+              .eq('id', profile.role_id)
+              .single();
+            roleName = roleData?.name;
+          }
+
+          switch (roleName) {
+            case 'admin':
+              navigate('/admin-dashboard');
+              break;
+            case 'teacher':
+              navigate('/teacher-dashboard');
+              break;
+            default:
+              navigate('/student-dashboard');
+          }
+        }
       }
     } catch (error) {
       toast({
