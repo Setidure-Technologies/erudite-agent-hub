@@ -14,6 +14,8 @@ import VerifyProfile from "./pages/VerifyProfile";
 import AnalyzeSkillGap from "./pages/AnalyzeSkillGap";
 import RecommendJobs from "./pages/RecommendJobs";
 import InterviewCoach from "./pages/InterviewCoach";
+import AdminPanel from "./pages/AdminPanel";
+import VoiceTraining from "./pages/VoiceTraining";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +45,8 @@ const AppContent = () => {
         <Route path="/analyze-skill-gap" element={<AnalyzeSkillGap />} />
         <Route path="/recommend-jobs" element={<RecommendJobs />} />
         <Route path="/interview-coach" element={<InterviewCoach />} />
+        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/voice-training" element={<VoiceTraining />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>

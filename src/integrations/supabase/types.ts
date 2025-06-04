@@ -36,6 +36,39 @@ export type Database = {
         }
         Relationships: []
       }
+      agents: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          name: string
+          route: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          route: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          route?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       Profiles: {
         Row: {
           "academic stream chosen in class 12": string | null
@@ -99,6 +132,7 @@ export type Database = {
           "Role or profile undertaken by the student during their summer i":
             | string
             | null
+          role_id: string | null
           Roll_Number: string | null
           "Second area of academic or professional specialization of the s":
             | string
@@ -174,6 +208,7 @@ export type Database = {
           "Role or profile undertaken by the student during their summer i"?:
             | string
             | null
+          role_id?: string | null
           Roll_Number?: string | null
           "Second area of academic or professional specialization of the s"?:
             | string
@@ -249,6 +284,7 @@ export type Database = {
           "Role or profile undertaken by the student during their summer i"?:
             | string
             | null
+          role_id?: string | null
           Roll_Number?: string | null
           "Second area of academic or professional specialization of the s"?:
             | string
@@ -261,6 +297,157 @@ export type Database = {
           "year when class 10 was completed"?: number | null
           "year when class 12 was completed"?: number | null
           "year when graduation was completed"?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Profiles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      role_agent_access: {
+        Row: {
+          agent_id: string
+          can_access: boolean
+          created_at: string
+          id: string
+          role_id: string
+        }
+        Insert: {
+          agent_id: string
+          can_access?: boolean
+          created_at?: string
+          id?: string
+          role_id: string
+        }
+        Update: {
+          agent_id?: string
+          can_access?: boolean
+          created_at?: string
+          id?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_agent_access_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "role_agent_access_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      vaakshakti_feedback: {
+        Row: {
+          content: string
+          created_at: string
+          feedback_by: string | null
+          feedback_type: string
+          id: string
+          session_id: string
+          suggestions: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          feedback_by?: string | null
+          feedback_type: string
+          id?: string
+          session_id: string
+          suggestions?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          feedback_by?: string | null
+          feedback_type?: string
+          id?: string
+          session_id?: string
+          suggestions?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vaakshakti_feedback_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "vaakshakti_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vaakshakti_sessions: {
+        Row: {
+          audio_url: string | null
+          created_at: string
+          duration_seconds: number | null
+          fluency_score: number | null
+          grammar_feedback: string | null
+          id: string
+          ideal_answer: string | null
+          question: string
+          transcript: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audio_url?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          fluency_score?: number | null
+          grammar_feedback?: string | null
+          id?: string
+          ideal_answer?: string | null
+          question: string
+          transcript?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          audio_url?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          fluency_score?: number | null
+          grammar_feedback?: string | null
+          id?: string
+          ideal_answer?: string | null
+          question?: string
+          transcript?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

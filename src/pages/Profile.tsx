@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -11,12 +11,15 @@ import { toast } from '@/hooks/use-toast';
 const Profile = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>({});
+  const [roles, setRoles] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (user) {
       fetchProfile();
+      fetchRoles();
     }
   }, [user]);
 
@@ -25,7 +28,10 @@ const Profile = () => {
     try {
       const { data, error } = await supabase
         .from('Profiles')
-        .select('*')
+        .select(`
+          *,
+          role:roles(id, name, description)
+        `)
         .eq('user_id', user?.id)
         .single();
 
@@ -35,6 +41,7 @@ const Profile = () => {
 
       if (data) {
         setProfile(data);
+        setIsAdmin(data.role?.name === 'admin');
       } else {
         // Initialize with user email if no profile exists
         setProfile({ 
@@ -49,22 +56,60 @@ const Profile = () => {
     }
   };
 
+  const fetchRoles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('roles')
+        .select('*')
+        .order('name');
+
+      if (error) throw error;
+      setRoles(data || []);
+    } catch (error) {
+      console.error('Error fetching roles:', error);
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { error } = await supabase
+      // First check if profile exists
+      const { data: existingProfile } = await supabase
         .from('Profiles')
-        .upsert({
-          user_id: user?.id,
-          ...profile,
-        });
+        .select('id')
+        .eq('user_id', user?.id)
+        .single();
 
-      if (error) throw error;
+      let profileData = { ...profile };
+      delete profileData.role; // Remove the joined role data
+
+      if (existingProfile) {
+        // Update existing profile
+        const { error } = await supabase
+          .from('Profiles')
+          .update(profileData)
+          .eq('user_id', user?.id);
+
+        if (error) throw error;
+      } else {
+        // Create new profile
+        const { error } = await supabase
+          .from('Profiles')
+          .insert({
+            user_id: user?.id,
+            ...profileData,
+          });
+
+        if (error) throw error;
+      }
 
       toast({
         title: "Success",
         description: "Profile updated successfully!",
       });
+
+      // Refresh profile to get updated data
+      fetchProfile();
     } catch (error) {
       console.error('Error saving profile:', error);
       toast({
@@ -81,6 +126,13 @@ const Profile = () => {
     setProfile((prev: any) => ({
       ...prev,
       [field]: value,
+    }));
+  };
+
+  const handleRoleChange = (roleId: string) => {
+    setProfile((prev: any) => ({
+      ...prev,
+      role_id: roleId,
     }));
   };
 
@@ -120,6 +172,38 @@ const Profile = () => {
             </div>
           </div>
 
+          {/* Role Selection - Only for admins */}
+          {isAdmin && (
+            <div>
+              <label className="block text-sm font-medium mb-2">Role</label>
+              <Select value={profile.role_id || ''} onValueChange={handleRoleChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a role" />
+                </SelectTrigger>
+                <SelectContent>
+                  {roles.map((role) => (
+                    <SelectItem key={role.id} value={role.id}>
+                      {role.name} - {role.description}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Current Role Display for non-admins */}
+          {!isAdmin && profile.role && (
+            <div>
+              <label className="block text-sm font-medium mb-2">Your Role</label>
+              <Input
+                value={`${profile.role.name} - ${profile.role.description}`}
+                disabled
+                className="bg-gray-100"
+              />
+            </div>
+          )}
+
+          {/* ... keep existing code (date of birth, gender, education sections, skills, etc.) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">Date of Birth</label>
