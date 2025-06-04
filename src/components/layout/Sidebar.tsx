@@ -52,20 +52,22 @@ const Sidebar = () => {
     }
 
     // Add accessible agent routes
-    const agentItems = accessibleAgents.map(agent => {
-      const iconMap: Record<string, any> = {
-        'Upload': Upload,
-        'BarChart3': BarChart3,
-        'Briefcase': Briefcase,
-        'Target': Target,
-      };
-      
-      return {
-        name: agent.name,
-        href: agent.route,
-        icon: iconMap[agent.icon] || Settings
-      };
-    });
+    const agentItems = accessibleAgents
+      .filter(agent => agent.route !== '/verify-profile')
+      .map(agent => {
+        const iconMap: Record<string, any> = {
+          'Upload': Upload,
+          'BarChart3': BarChart3,
+          'Briefcase': Briefcase,
+          'Target': Target,
+        };
+
+        return {
+          name: agent.name,
+          href: agent.route,
+          icon: iconMap[agent.icon] || Settings
+        };
+      });
 
     return [...baseNavigation, ...roleSpecificItems, ...agentItems];
   };

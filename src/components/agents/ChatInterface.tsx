@@ -20,13 +20,15 @@ interface ChatInterfaceProps {
   webhookUrl: string;
   initialMessage?: string;
   profile: any;
+  extraFields?: Record<string, string | Blob>;
 }
 
-export const ChatInterface = ({ 
-  title, 
-  webhookUrl, 
+export const ChatInterface = ({
+  title,
+  webhookUrl,
   initialMessage = "Hello! I'm your Interview Coach. How can I help you prepare for your interview today?",
-  profile 
+  profile,
+  extraFields
 }: ChatInterfaceProps) => {
   console.log('ChatInterface received props:', { title, webhookUrl, profile });
   const [messages, setMessages] = useState<Message[]>([]);
@@ -84,6 +86,11 @@ export const ChatInterface = ({
       formData.append('user_id', user?.id || '');
       formData.append('input', currentInput);
       formData.append('profile', JSON.stringify(profile || {}));
+      if (extraFields) {
+        Object.entries(extraFields).forEach(([key, value]) => {
+          formData.append(key, value);
+        });
+      }
 
       console.log('FormData contents:');
       for (let [key, value] of formData.entries()) {

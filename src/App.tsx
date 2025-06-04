@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "next-themes";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import { AuthForm } from "./components/auth/AuthForm";
@@ -13,7 +14,6 @@ import TeacherDashboard from "./pages/TeacherDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Profile from "./pages/Profile";
 import UploadResume from "./pages/UploadResume";
-import VerifyProfile from "./pages/VerifyProfile";
 import AnalyzeSkillGap from "./pages/AnalyzeSkillGap";
 import RecommendJobs from "./pages/RecommendJobs";
 import InterviewCoach from "./pages/InterviewCoach";
@@ -43,9 +43,11 @@ const AppContent = () => {
     <Layout>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/student-dashboard" element={<StudentDashboard />} />
+        <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/upload-resume" element={<UploadResume />} />
-        <Route path="/verify-profile" element={<VerifyProfile />} />
         <Route path="/analyze-skill-gap" element={<AnalyzeSkillGap />} />
         <Route path="/recommend-jobs" element={<RecommendJobs />} />
         <Route path="/interview-coach" element={<InterviewCoach />} />
@@ -61,13 +63,15 @@ const AppContent = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <AppContent />
-        </AuthProvider>
-      </BrowserRouter>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <AppContent />
+          </AuthProvider>
+        </BrowserRouter>
+      </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
