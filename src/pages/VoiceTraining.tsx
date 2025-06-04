@@ -8,6 +8,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Mic, Square, Play, Volume2, MessageSquare } from 'lucide-react';
 
+export const getScoreBadgeVariant = (score: number | null | undefined) => {
+  if (score === null || score === undefined) return "secondary";
+  if (score >= 80) return "default";
+  if (score >= 60) return "secondary";
+  return "destructive";
+};
+
 const VoiceTraining = () => {
   const { user } = useAuth();
   const [isRecording, setIsRecording] = useState(false);
@@ -184,12 +191,6 @@ const VoiceTraining = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const getScoreBadgeVariant = (score: number | null) => {
-    if (!score) return "secondary";
-    if (score >= 80) return "default";
-    if (score >= 60) return "secondary";
-    return "destructive";
-  };
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
