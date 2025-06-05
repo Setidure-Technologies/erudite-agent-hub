@@ -292,7 +292,7 @@ const AdminDashboard = () => {
                 </Badge>
               </div>
               <div className="flex justify-between items-center">
-                <span>Need Improvement (<60%)</span>
+                <span>Need Improvement (&lt;60%)</span>
                 <Badge variant="destructive">
                   {allSessions.filter(s => s.fluency_score < 60).length}
                 </Badge>
