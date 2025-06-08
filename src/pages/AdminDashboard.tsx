@@ -72,7 +72,7 @@ const AdminDashboard = () => {
     const avgScore = allSessions.length > 0 
       ? Math.round(allSessions.reduce((acc, session) => acc + (session.fluency_score || 0), 0) / allSessions.length)
       : 0;
-    const completedProfiles = allStudents.filter(s => s.name && s.email && s['technical skills of the student']).length;
+    const completedProfiles = allStudents.filter(s => s.name && s.email && s.technical_skills).length;
     
     return { totalStudents, totalTeachers, avgScore, completedProfiles };
   };
@@ -225,20 +225,20 @@ const AdminDashboard = () => {
                       <div>
                         <span className="text-sm text-gray-600">Age:</span>
                         <p className="font-medium">
-                          {student['current age of the student'] || 'Not specified'}
+                          {student.current_age || 'Not specified'}
                         </p>
                       </div>
                       <div>
                         <span className="text-sm text-gray-600">Graduation:</span>
                         <p className="font-medium">
-                          {student['type of degree obtained during graduation'] || 'Not specified'}
+                          {student.graduation_degree || 'Not specified'}
                         </p>
                       </div>
                       <div>
                         <span className="text-sm text-gray-600">Experience:</span>
                         <p className="font-medium">
-                          {student['total work experience of the student in months'] 
-                            ? `${student['total work experience of the student in months']} months`
+                          {student.work_experience 
+                            ? `${student.work_experience} months`
                             : 'No experience'
                           }
                         </p>
@@ -364,119 +364,35 @@ const AdminDashboard = () => {
                   </div>
                   <div>
                     <span className="text-sm text-gray-600">Date of Birth:</span>
-                    <p className="font-medium">{selectedStudent['date of birth in mm/dd/yyyy format'] || 'Not provided'}</p>
+                    <p className="font-medium">{selectedStudent.date_of_birth || 'Not provided'}</p>
                   </div>
                   <div>
                     <span className="text-sm text-gray-600">Gender:</span>
-                    <p className="font-medium">{selectedStudent['gender of the student'] || 'Not provided'}</p>
+                    <p className="font-medium">{selectedStudent.gender || 'Not provided'}</p>
                   </div>
                   <div>
                     <span className="text-sm text-gray-600">Current Age:</span>
-                    <p className="font-medium">{selectedStudent['current age of the student'] || 'Not provided'}</p>
+                    <p className="font-medium">{selectedStudent.current_age || 'Not provided'}</p>
                   </div>
                 </div>
               </div>
 
-              {/* Complete Academic History */}
-              <div>
-                <h4 className="font-semibold text-lg mb-3">Complete Academic History</h4>
-                <div className="space-y-4">
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <h5 className="font-semibold text-blue-800 mb-2">Class 10</h5>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                      <div>
-                        <span className="text-sm text-blue-600">School:</span>
-                        <p className="font-medium">{selectedStudent['name of the school attended for class 10'] || 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-blue-600">Board:</span>
-                        <p className="font-medium">{selectedStudent['education board for class 10'] || 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-blue-600">Percentage:</span>
-                        <p className="font-medium">{selectedStudent['percentage marks scored in class 10'] ? `${selectedStudent['percentage marks scored in class 10']}%` : 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-blue-600">Year:</span>
-                        <p className="font-medium">{selectedStudent['year when class 10 was completed'] || 'Not specified'}</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <h5 className="font-semibold text-green-800 mb-2">Class 12</h5>
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-                      <div>
-                        <span className="text-sm text-green-600">School:</span>
-                        <p className="font-medium">{selectedStudent['name of the school attended for class 12'] || 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-green-600">Board:</span>
-                        <p className="font-medium">{selectedStudent['education board for class 12'] || 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-green-600">Stream:</span>
-                        <p className="font-medium">{selectedStudent['academic stream chosen in class 12'] || 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-green-600">Percentage:</span>
-                        <p className="font-medium">{selectedStudent['percentage marks scored in class 12'] ? `${selectedStudent['percentage marks scored in class 12']}%` : 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-green-600">Year:</span>
-                        <p className="font-medium">{selectedStudent['year when class 12 was completed'] || 'Not specified'}</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-purple-50 p-4 rounded-lg">
-                    <h5 className="font-semibold text-purple-800 mb-2">Graduation</h5>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <div>
-                        <span className="text-sm text-purple-600">College:</span>
-                        <p className="font-medium">{selectedStudent['name of the college attended for graduation'] || 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-purple-600">University:</span>
-                        <p className="font-medium">{selectedStudent['name of the university attended for graduation'] || 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-purple-600">Degree:</span>
-                        <p className="font-medium">{selectedStudent['type of degree obtained during graduation'] || 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-purple-600">Specialization:</span>
-                        <p className="font-medium">{selectedStudent['specialization pursued during graduation'] || 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-purple-600">Percentage:</span>
-                        <p className="font-medium">{selectedStudent['percentage marks obtained during graduation'] ? `${selectedStudent['percentage marks obtained during graduation']}%` : 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-purple-600">Year:</span>
-                        <p className="font-medium">{selectedStudent['year when graduation was completed'] || 'Not specified'}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* All other fields in organized sections */}
+              {/* Skills & Competencies */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-semibold text-lg mb-3">Skills & Competencies</h4>
                   <div className="space-y-3">
                     <div>
                       <span className="text-sm text-gray-600">Technical Skills:</span>
-                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent['technical skills of the student'] || 'Not specified'}</p>
+                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent.technical_skills || 'Not specified'}</p>
                     </div>
                     <div>
                       <span className="text-sm text-gray-600">Soft Skills:</span>
-                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent['interpersonal or soft skills of the student'] || 'Not specified'}</p>
+                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent.soft_skills || 'Not specified'}</p>
                     </div>
                     <div>
                       <span className="text-sm text-gray-600">Languages:</span>
-                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent['Languages the student can speak, understand, or is proficient i'] || 'Not specified'}</p>
+                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent.languages || 'Not specified'}</p>
                     </div>
                   </div>
                 </div>
@@ -486,15 +402,15 @@ const AdminDashboard = () => {
                   <div className="space-y-3">
                     <div>
                       <span className="text-sm text-gray-600">Career Goal:</span>
-                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent['Desired job role or long-term career goal of the student'] || 'Not specified'}</p>
+                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent.career_goal || 'Not specified'}</p>
                     </div>
                     <div>
                       <span className="text-sm text-gray-600">Primary Specialization:</span>
-                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent['First area of academic or professional specialization of the st'] || 'Not specified'}</p>
+                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent.primary_specialization || 'Not specified'}</p>
                     </div>
                     <div>
                       <span className="text-sm text-gray-600">Secondary Specialization:</span>
-                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent['Second area of academic or professional specialization of the s'] || 'Not specified'}</p>
+                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent.secondary_specialization || 'Not specified'}</p>
                     </div>
                   </div>
                 </div>

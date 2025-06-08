@@ -1,5 +1,6 @@
+
 import { describe, it, expect } from 'vitest';
-import { getScoreBadgeVariant } from '../VoiceTraining';
+import { getScoreBadgeVariant } from '@/lib/getScoreBadgeVariant';
 
 describe('getScoreBadgeVariant', () => {
   it('returns "secondary" for null', () => {
