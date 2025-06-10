@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import { AuthForm } from "./components/auth/AuthForm";
 import { Layout } from "./components/layout/Layout";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import Home from "./pages/Home";
 import StudentDashboard from "./pages/StudentDashboard";
 import TeacherDashboard from "./pages/TeacherDashboard";
@@ -22,7 +23,14 @@ import AdminPanel from "./pages/AdminPanel";
 import VoiceTraining from "./pages/VoiceTraining";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const AppContent = () => {
   const { user, loading } = useAuth();
@@ -41,21 +49,23 @@ const AppContent = () => {
 
   return (
     <Layout>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/student-dashboard" element={<StudentDashboard />} />
-        <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/upload-resume" element={<UploadResume />} />
-        <Route path="/analyze-skill-gap" element={<AnalyzeSkillGap />} />
-        <Route path="/recommend-jobs" element={<RecommendJobs />} />
-        <Route path="/interview-coach" element={<InterviewCoach />} />
-        <Route path="/test-webhook" element={<TestWebhook />} />
-        <Route path="/admin" element={<AdminPanel />} />
-        <Route path="/voice-training" element={<VoiceTraining />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/student-dashboard" element={<StudentDashboard />} />
+          <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/upload-resume" element={<UploadResume />} />
+          <Route path="/analyze-skill-gap" element={<AnalyzeSkillGap />} />
+          <Route path="/recommend-jobs" element={<RecommendJobs />} />
+          <Route path="/interview-coach" element={<InterviewCoach />} />
+          <Route path="/test-webhook" element={<TestWebhook />} />
+          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/voice-training" element={<VoiceTraining />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </ErrorBoundary>
     </Layout>
   );
 };
@@ -66,11 +76,13 @@ const App = () => (
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <AppContent />
-          </AuthProvider>
-        </BrowserRouter>
+        <ErrorBoundary>
+          <BrowserRouter>
+            <AuthProvider>
+              <AppContent />
+            </AuthProvider>
+          </BrowserRouter>
+        </ErrorBoundary>
       </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>

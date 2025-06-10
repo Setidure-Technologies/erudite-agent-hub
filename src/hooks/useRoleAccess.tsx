@@ -86,15 +86,20 @@ export const useRoleAccess = () => {
   const [allStudents, setAllStudents] = useState<UserProfile[]>([]);
   const [allSessions, setAllSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
       fetchUserRoleAndAgents();
+    } else {
+      setLoading(false);
     }
   }, [user]);
 
   const fetchUserRoleAndAgents = async () => {
     try {
+      setError(null);
+      
       // Get user's complete profile with role
       const { data: profileData, error: profileError } = await supabase
         .from('Profiles')
@@ -103,9 +108,13 @@ export const useRoleAccess = () => {
           role:roles(id, name, description)
         `)
         .eq('user_id', user?.id)
-        .single();
+        .maybeSingle();
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('Profile fetch error:', profileError);
+        setError('Failed to fetch user profile');
+        return;
+      }
 
       const role = profileData?.role;
       setUserRole(role);
@@ -121,13 +130,14 @@ export const useRoleAccess = () => {
           .eq('role_id', role.id)
           .eq('can_access', true);
 
-        if (agentError) throw agentError;
-
-        const agents = agentAccessData
-          ?.map(item => item.agent)
-          .filter(agent => agent && agent.is_active) || [];
-
-        setAccessibleAgents(agents);
+        if (agentError) {
+          console.error('Agent access error:', agentError);
+        } else {
+          const agents = agentAccessData
+            ?.map(item => item.agent)
+            .filter(agent => agent && agent.is_active) || [];
+          setAccessibleAgents(agents);
+        }
 
         // If admin or teacher, fetch additional data
         if (role.name === 'admin' || role.name === 'teacher') {
@@ -136,6 +146,7 @@ export const useRoleAccess = () => {
       }
     } catch (error) {
       console.error('Error fetching user role and agents:', error);
+      setError('Failed to load user data');
     } finally {
       setLoading(false);
     }
@@ -152,8 +163,11 @@ export const useRoleAccess = () => {
         `)
         .order('created_at', { ascending: false });
 
-      if (studentsError) throw studentsError;
-      setAllStudents(studentsData || []);
+      if (studentsError) {
+        console.error('Students fetch error:', studentsError);
+      } else {
+        setAllStudents(studentsData || []);
+      }
 
       // Fetch all VaakShakti sessions
       const { data: sessionsData, error: sessionsError } = await supabase
@@ -164,8 +178,11 @@ export const useRoleAccess = () => {
         `)
         .order('created_at', { ascending: false });
 
-      if (sessionsError) throw sessionsError;
-      setAllSessions(sessionsData || []);
+      if (sessionsError) {
+        console.error('Sessions fetch error:', sessionsError);
+      } else {
+        setAllSessions(sessionsData || []);
+      }
 
     } catch (error) {
       console.error('Error fetching additional data:', error);
@@ -195,6 +212,7 @@ export const useRoleAccess = () => {
     allStudents,
     allSessions,
     loading,
+    error,
     hasAccess,
     isAdmin,
     isTeacher,

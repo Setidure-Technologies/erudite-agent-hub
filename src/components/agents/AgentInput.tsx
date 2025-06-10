@@ -52,6 +52,15 @@ export const AgentInput = ({
       return;
     }
 
+    if (!webhookUrl) {
+      toast({
+        title: "Error",
+        description: "Webhook URL is not configured.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const requestData = {
@@ -62,19 +71,26 @@ export const AgentInput = ({
 
       console.log(`Making request to ${webhookUrl} with data:`, requestData);
       
-      // Use POST request with FormData (consistent with ChatInterface)
+      // Create FormData for the request
       const formData = new FormData();
       formData.append('user_id', user?.id || '');
       formData.append('input', input);
       formData.append('profile', JSON.stringify(profile || {}));
       
+      // Set a reasonable timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const webhookResponse = await fetch(webhookUrl, {
         method: 'POST',
         body: formData,
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
       if (!webhookResponse.ok) {
-        throw new Error(`Webhook request failed: ${webhookResponse.status}`);
+        throw new Error(`Webhook request failed: ${webhookResponse.status} ${webhookResponse.statusText}`);
       }
 
       const responseText = await webhookResponse.text();
@@ -93,17 +109,22 @@ export const AgentInput = ({
       onResponse(responseData);
 
       // Save to agent logs
-      await supabase
-        .from('agent_logs')
-        .insert({
-          user_id: user?.id,
-          agent_name: title,
-          input_data: requestData,
-          response_data: responseData,
-        });
+      try {
+        await supabase
+          .from('agent_logs')
+          .insert({
+            user_id: user?.id,
+            agent_name: title,
+            input_data: requestData,
+            response_data: responseData,
+          });
 
-      // Refresh logs
-      onLogsUpdate();
+        // Refresh logs
+        onLogsUpdate();
+      } catch (logError) {
+        console.error('Error saving to agent logs:', logError);
+        // Don't show error to user for logging failure
+      }
 
       toast({
         title: "Success",
@@ -112,9 +133,22 @@ export const AgentInput = ({
 
     } catch (error) {
       console.error('Error running agent:', error);
+      
+      let errorMessage = "Failed to run agent. Please try again.";
+      
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = "Request timeout. The webhook is taking too long to respond.";
+        } else if (error.message.includes('Failed to fetch')) {
+          errorMessage = "Network error. Please check your connection and the webhook URL.";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
       toast({
         title: "Error",
-        description: "Failed to run agent. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -138,7 +172,7 @@ export const AgentInput = ({
       <div className="flex space-x-2">
         <Button 
           onClick={runAgent} 
-          disabled={loading} 
+          disabled={loading || !input.trim()} 
           className="flex-1"
         >
           {loading ? 'Running Agent...' : 'Run Agent'}
