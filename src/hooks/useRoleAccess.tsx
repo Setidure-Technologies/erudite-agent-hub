@@ -25,7 +25,7 @@ interface UserProfile {
   email: string;
   role_id: string;
   role: Role;
-  // All the student data fields
+  // All the student data fields with correct names from database
   'date of birth in mm/dd/yyyy format': string;
   'gender of the student': string;
   'current age of the student': number;

@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -311,7 +312,7 @@ const VoiceTraining = () => {
                       </div>
                     </div>
                     {session.fluency_score && (
-                      <Badge variant={getScoreBadgeVariant(session.fluency_score)}>
+                      <Badge variant={getScoreBadgeVariant(session.fluency_score) as "default" | "destructive" | "outline" | "secondary"}>
                         Score: {session.fluency_score}%
                       </Badge>
                     )}

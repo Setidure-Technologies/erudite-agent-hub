@@ -72,7 +72,9 @@ const AdminDashboard = () => {
     const avgScore = allSessions.length > 0 
       ? Math.round(allSessions.reduce((acc, session) => acc + (session.fluency_score || 0), 0) / allSessions.length)
       : 0;
-    const completedProfiles = allStudents.filter(s => s.name && s.email && s.technical_skills).length;
+    const completedProfiles = allStudents.filter(s => 
+      s.name && s.email && s['technical skills of the student']
+    ).length;
     
     return { totalStudents, totalTeachers, avgScore, completedProfiles };
   };
@@ -225,20 +227,20 @@ const AdminDashboard = () => {
                       <div>
                         <span className="text-sm text-gray-600">Age:</span>
                         <p className="font-medium">
-                          {student.current_age || 'Not specified'}
+                          {student['current age of the student'] || 'Not specified'}
                         </p>
                       </div>
                       <div>
                         <span className="text-sm text-gray-600">Graduation:</span>
                         <p className="font-medium">
-                          {student.graduation_degree || 'Not specified'}
+                          {student['type of degree obtained during graduation'] || 'Not specified'}
                         </p>
                       </div>
                       <div>
                         <span className="text-sm text-gray-600">Experience:</span>
                         <p className="font-medium">
-                          {student.work_experience 
-                            ? `${student.work_experience} months`
+                          {student['total work experience of the student in months'] 
+                            ? `${student['total work experience of the student in months']} months`
                             : 'No experience'
                           }
                         </p>
@@ -364,15 +366,15 @@ const AdminDashboard = () => {
                   </div>
                   <div>
                     <span className="text-sm text-gray-600">Date of Birth:</span>
-                    <p className="font-medium">{selectedStudent.date_of_birth || 'Not provided'}</p>
+                    <p className="font-medium">{selectedStudent['date of birth in mm/dd/yyyy format'] || 'Not provided'}</p>
                   </div>
                   <div>
                     <span className="text-sm text-gray-600">Gender:</span>
-                    <p className="font-medium">{selectedStudent.gender || 'Not provided'}</p>
+                    <p className="font-medium">{selectedStudent['gender of the student'] || 'Not provided'}</p>
                   </div>
                   <div>
                     <span className="text-sm text-gray-600">Current Age:</span>
-                    <p className="font-medium">{selectedStudent.current_age || 'Not provided'}</p>
+                    <p className="font-medium">{selectedStudent['current age of the student'] || 'Not provided'}</p>
                   </div>
                 </div>
               </div>
@@ -384,15 +386,15 @@ const AdminDashboard = () => {
                   <div className="space-y-3">
                     <div>
                       <span className="text-sm text-gray-600">Technical Skills:</span>
-                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent.technical_skills || 'Not specified'}</p>
+                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent['technical skills of the student'] || 'Not specified'}</p>
                     </div>
                     <div>
                       <span className="text-sm text-gray-600">Soft Skills:</span>
-                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent.soft_skills || 'Not specified'}</p>
+                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent['interpersonal or soft skills of the student'] || 'Not specified'}</p>
                     </div>
                     <div>
                       <span className="text-sm text-gray-600">Languages:</span>
-                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent.languages || 'Not specified'}</p>
+                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent['Languages the student can speak, understand, or is proficient i'] || 'Not specified'}</p>
                     </div>
                   </div>
                 </div>
@@ -402,15 +404,15 @@ const AdminDashboard = () => {
                   <div className="space-y-3">
                     <div>
                       <span className="text-sm text-gray-600">Career Goal:</span>
-                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent.career_goal || 'Not specified'}</p>
+                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent['Desired job role or long-term career goal of the student'] || 'Not specified'}</p>
                     </div>
                     <div>
                       <span className="text-sm text-gray-600">Primary Specialization:</span>
-                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent.primary_specialization || 'Not specified'}</p>
+                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent['First area of academic or professional specialization of the st'] || 'Not specified'}</p>
                     </div>
                     <div>
                       <span className="text-sm text-gray-600">Secondary Specialization:</span>
-                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent.secondary_specialization || 'Not specified'}</p>
+                      <p className="font-medium bg-gray-50 p-2 rounded">{selectedStudent['Second area of academic or professional specialization of the s'] || 'Not specified'}</p>
                     </div>
                   </div>
                 </div>
