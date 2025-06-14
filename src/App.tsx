@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +22,10 @@ import AdminPanel from "./pages/AdminPanel";
 import VoiceTraining from "./pages/VoiceTraining";
 import NotFound from "./pages/NotFound";
 import LandingPage from "./pages/LandingPage";
+import JobRecommendationAgent from "./pages/JobRecommendationAgent";
+import CertificateCourseAgent from "./pages/CertificateCourseAgent";
+import ResumeMaker from "./pages/ResumeMaker";
+import PlagiarismTest from "./pages/PlagiarismTest";
 
 const queryClient = new QueryClient({
   defaultOptions: {

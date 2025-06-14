@@ -17,7 +17,10 @@ import {
   LogOut,
   Shield,
   BookOpen,
-  Users
+  Users,
+  // ADD THESE ICONS:
+  FileText,
+  FileMinus,
 } from 'lucide-react';
 
 const Sidebar = () => {
