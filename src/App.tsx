@@ -22,6 +22,7 @@ import TestWebhook from "./pages/TestWebhook";
 import AdminPanel from "./pages/AdminPanel";
 import VoiceTraining from "./pages/VoiceTraining";
 import NotFound from "./pages/NotFound";
+import LandingPage from "./pages/LandingPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,30 +44,34 @@ const AppContent = () => {
     );
   }
 
-  if (!user) {
-    return <AuthForm />;
-  }
-
+  // Show routes for both authenticated and non-authenticated users
   return (
-    <Layout>
-      <ErrorBoundary>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/student-dashboard" element={<StudentDashboard />} />
-          <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/upload-resume" element={<UploadResume />} />
-          <Route path="/analyze-skill-gap" element={<AnalyzeSkillGap />} />
-          <Route path="/recommend-jobs" element={<RecommendJobs />} />
-          <Route path="/interview-coach" element={<InterviewCoach />} />
-          <Route path="/test-webhook" element={<TestWebhook />} />
-          <Route path="/admin" element={<AdminPanel />} />
-          <Route path="/voice-training" element={<VoiceTraining />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </ErrorBoundary>
-    </Layout>
+    <ErrorBoundary>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/auth" element={<AuthForm />} />
+        
+        {/* Protected routes - only show when user is authenticated */}
+        {user && (
+          <>
+            <Route path="/student-dashboard" element={<Layout><StudentDashboard /></Layout>} />
+            <Route path="/teacher-dashboard" element={<Layout><TeacherDashboard /></Layout>} />
+            <Route path="/admin-dashboard" element={<Layout><AdminDashboard /></Layout>} />
+            <Route path="/profile" element={<Layout><Profile /></Layout>} />
+            <Route path="/upload-resume" element={<Layout><UploadResume /></Layout>} />
+            <Route path="/analyze-skill-gap" element={<Layout><AnalyzeSkillGap /></Layout>} />
+            <Route path="/recommend-jobs" element={<Layout><RecommendJobs /></Layout>} />
+            <Route path="/interview-coach" element={<Layout><InterviewCoach /></Layout>} />
+            <Route path="/test-webhook" element={<Layout><TestWebhook /></Layout>} />
+            <Route path="/admin" element={<Layout><AdminPanel /></Layout>} />
+            <Route path="/voice-training" element={<Layout><VoiceTraining /></Layout>} />
+          </>
+        )}
+        
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </ErrorBoundary>
   );
 };
 

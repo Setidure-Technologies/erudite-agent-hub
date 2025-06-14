@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -145,10 +144,12 @@ const LandingPage = () => {
               <a href="#roles" className="text-gray-600 hover:text-blue-600 transition-colors">For Everyone</a>
               <a href="#testimonials" className="text-gray-600 hover:text-blue-600 transition-colors">Testimonials</a>
             </nav>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              Get Started
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            <Link to="/auth">
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -168,10 +169,12 @@ const LandingPage = () => {
                 From resume analysis to interview coaching, we've got everything you need to succeed.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                  Start Your Journey
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                <Link to="/auth">
+                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                    Start Your Journey
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
                 <Button variant="outline" size="lg" className="group">
                   <Play className="mr-2 h-5 w-5 group-hover:text-blue-600" />
                   Watch Demo
@@ -351,10 +354,12 @@ const LandingPage = () => {
             Join thousands of users who are already accelerating their career growth with our AI-powered platform.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-              Start Free Trial
-              <Zap className="ml-2 h-5 w-5" />
-            </Button>
+            <Link to="/auth">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+                Start Free Trial
+                <Zap className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
             <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-blue-600">
               Schedule Demo
               <MessageSquare className="ml-2 h-5 w-5" />
