@@ -2,18 +2,21 @@
 import { useRoleAccess } from '@/hooks/useRoleAccess';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Loader2 } from 'lucide-react';
 import StudentDashboard from './StudentDashboard';
 import TeacherDashboard from './TeacherDashboard';
 import AdminDashboard from './AdminDashboard';
 
 const Home = () => {
-  const { userRole, loading, error } = useRoleAccess();
+  const { userRole, loading, error, refetch } = useRoleAccess();
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <div className="text-lg">Loading dashboard...</div>
+      <div className="flex items-center justify-center py-16">
+        <div className="flex items-center gap-3">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <div className="text-lg">Loading dashboard...</div>
+        </div>
       </div>
     );
   }
@@ -29,7 +32,7 @@ const Home = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-gray-600">{error}</p>
-          <Button onClick={() => window.location.reload()} className="w-full">
+          <Button onClick={refetch} className="w-full">
             Retry
           </Button>
         </CardContent>

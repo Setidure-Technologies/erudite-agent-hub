@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,14 +8,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 const Profile = () => {
   const { user } = useAuth();
+  const { isAdmin } = useRoleAccess();
   const [profile, setProfile] = useState<any>({});
   const [roles, setRoles] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -41,7 +43,6 @@ const Profile = () => {
 
       if (data) {
         setProfile(data);
-        setIsAdmin(data.role?.name === 'admin');
       } else {
         // Initialize with user email if no profile exists
         setProfile({ 
@@ -122,7 +123,7 @@ const Profile = () => {
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | number) => {
     setProfile((prev: any) => ({
       ...prev,
       [field]: value,
@@ -145,10 +146,10 @@ const Profile = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Edit Profile</CardTitle>
+          <CardTitle>Profile Management</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Basic Information */}
@@ -168,6 +169,25 @@ const Profile = () => {
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 placeholder="Enter your email"
                 type="email"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Roll Number</label>
+              <Input
+                value={profile.Roll_Number || ''}
+                onChange={(e) => handleInputChange('Roll_Number', e.target.value)}
+                placeholder="Enter your roll number"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Date of Birth</label>
+              <Input
+                value={profile['date of birth in mm/dd/yyyy format'] || ''}
+                onChange={(e) => handleInputChange('date of birth in mm/dd/yyyy format', e.target.value)}
+                placeholder="MM/DD/YYYY"
               />
             </div>
           </div>
@@ -203,22 +223,23 @@ const Profile = () => {
             </div>
           )}
 
-          {/* ... keep existing code (date of birth, gender, education sections, skills, etc.) */}
+          {/* Personal Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Date of Birth</label>
-              <Input
-                value={profile['date of birth in mm/dd/yyyy format'] || ''}
-                onChange={(e) => handleInputChange('date of birth in mm/dd/yyyy format', e.target.value)}
-                placeholder="MM/DD/YYYY"
-              />
-            </div>
             <div>
               <label className="block text-sm font-medium mb-2">Gender</label>
               <Input
                 value={profile['gender of the student'] || ''}
                 onChange={(e) => handleInputChange('gender of the student', e.target.value)}
                 placeholder="Enter your gender"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Current Age</label>
+              <Input
+                value={profile['current age of the student'] || ''}
+                onChange={(e) => handleInputChange('current age of the student', parseInt(e.target.value) || '')}
+                placeholder="Enter your age"
+                type="number"
               />
             </div>
           </div>
@@ -247,11 +268,21 @@ const Profile = () => {
                 <label className="block text-sm font-medium mb-2">Percentage</label>
                 <Input
                   value={profile['percentage marks scored in class 10'] || ''}
-                  onChange={(e) => handleInputChange('percentage marks scored in class 10', e.target.value)}
+                  onChange={(e) => handleInputChange('percentage marks scored in class 10', parseFloat(e.target.value) || '')}
                   placeholder="Percentage"
                   type="number"
+                  step="0.01"
                 />
               </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Year of Completion</label>
+              <Input
+                value={profile['year when class 10 was completed'] || ''}
+                onChange={(e) => handleInputChange('year when class 10 was completed', parseInt(e.target.value) || '')}
+                placeholder="Year"
+                type="number"
+              />
             </div>
           </div>
 
@@ -276,11 +307,31 @@ const Profile = () => {
                 />
               </div>
               <div>
+                <label className="block text-sm font-medium mb-2">Stream</label>
+                <Input
+                  value={profile['academic stream chosen in class 12'] || ''}
+                  onChange={(e) => handleInputChange('academic stream chosen in class 12', e.target.value)}
+                  placeholder="Academic stream"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
                 <label className="block text-sm font-medium mb-2">Percentage</label>
                 <Input
                   value={profile['percentage marks scored in class 12'] || ''}
-                  onChange={(e) => handleInputChange('percentage marks scored in class 12', e.target.value)}
+                  onChange={(e) => handleInputChange('percentage marks scored in class 12', parseFloat(e.target.value) || '')}
                   placeholder="Percentage"
+                  type="number"
+                  step="0.01"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Year of Completion</label>
+                <Input
+                  value={profile['year when class 12 was completed'] || ''}
+                  onChange={(e) => handleInputChange('year when class 12 was completed', parseInt(e.target.value) || '')}
+                  placeholder="Year"
                   type="number"
                 />
               </div>
@@ -300,6 +351,16 @@ const Profile = () => {
                 />
               </div>
               <div>
+                <label className="block text-sm font-medium mb-2">University</label>
+                <Input
+                  value={profile['name of the university attended for graduation'] || ''}
+                  onChange={(e) => handleInputChange('name of the university attended for graduation', e.target.value)}
+                  placeholder="University name"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
                 <label className="block text-sm font-medium mb-2">Degree Type</label>
                 <Input
                   value={profile['type of degree obtained during graduation'] || ''}
@@ -307,8 +368,6 @@ const Profile = () => {
                   placeholder="e.g., B.Tech, B.A., B.Com"
                 />
               </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Specialization</label>
                 <Input
@@ -317,12 +376,24 @@ const Profile = () => {
                   placeholder="Specialization/Major"
                 />
               </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Percentage</label>
                 <Input
                   value={profile['percentage marks obtained during graduation'] || ''}
-                  onChange={(e) => handleInputChange('percentage marks obtained during graduation', e.target.value)}
+                  onChange={(e) => handleInputChange('percentage marks obtained during graduation', parseFloat(e.target.value) || '')}
                   placeholder="Percentage"
+                  type="number"
+                  step="0.01"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Year of Completion</label>
+                <Input
+                  value={profile['year when graduation was completed'] || ''}
+                  onChange={(e) => handleInputChange('year when graduation was completed', parseInt(e.target.value) || '')}
+                  placeholder="Year"
                   type="number"
                 />
               </div>
@@ -332,20 +403,32 @@ const Profile = () => {
           {/* MBA Details */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">MBA Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">CGPA</label>
+                <Input
+                  value={profile['cgpa during mba program'] || ''}
+                  onChange={(e) => handleInputChange('cgpa during mba program', parseFloat(e.target.value) || '')}
+                  placeholder="CGPA"
+                  type="number"
+                  step="0.01"
+                />
+              </div>
+            </div>
             <div>
-              <label className="block text-sm font-medium mb-2">CGPA</label>
-              <Input
-                value={profile['cgpa during mba program'] || ''}
-                onChange={(e) => handleInputChange('cgpa during mba program', e.target.value)}
-                placeholder="CGPA"
-                type="number"
-                step="0.01"
+              <label className="block text-sm font-medium mb-2">Projects/Research Work</label>
+              <Textarea
+                value={profile['projects or research work done during mba'] || ''}
+                onChange={(e) => handleInputChange('projects or research work done during mba', e.target.value)}
+                placeholder="Describe your projects or research work"
+                rows={3}
               />
             </div>
           </div>
 
           {/* Skills and Experience */}
           <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Skills & Experience</h3>
             <div>
               <label className="block text-sm font-medium mb-2">Technical Skills</label>
               <Textarea
@@ -356,13 +439,53 @@ const Profile = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Work Experience (months)</label>
-              <Input
-                value={profile['total work experience of the student in months'] || ''}
-                onChange={(e) => handleInputChange('total work experience of the student in months', e.target.value)}
-                placeholder="Total work experience in months"
-                type="number"
+              <label className="block text-sm font-medium mb-2">Interpersonal/Soft Skills</label>
+              <Textarea
+                value={profile['interpersonal or soft skills of the student'] || ''}
+                onChange={(e) => handleInputChange('interpersonal or soft skills of the student', e.target.value)}
+                placeholder="List your soft skills"
+                rows={3}
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Languages</label>
+              <Textarea
+                value={profile['Languages the student can speak, understand, or is proficient i'] || ''}
+                onChange={(e) => handleInputChange('Languages the student can speak, understand, or is proficient i', e.target.value)}
+                placeholder="Languages you can speak, understand, or are proficient in"
+                rows={2}
+              />
+            </div>
+          </div>
+
+          {/* Career Goals */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Career Goals & Specializations</h3>
+            <div>
+              <label className="block text-sm font-medium mb-2">Desired Job Role/Career Goal</label>
+              <Input
+                value={profile['Desired job role or long-term career goal of the student'] || ''}
+                onChange={(e) => handleInputChange('Desired job role or long-term career goal of the student', e.target.value)}
+                placeholder="Your desired job role or long-term career goal"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">First Area of Specialization</label>
+                <Input
+                  value={profile['First area of academic or professional specialization of the st'] || ''}
+                  onChange={(e) => handleInputChange('First area of academic or professional specialization of the st', e.target.value)}
+                  placeholder="First specialization area"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Second Area of Specialization</label>
+                <Input
+                  value={profile['Second area of academic or professional specialization of the s'] || ''}
+                  onChange={(e) => handleInputChange('Second area of academic or professional specialization of the s', e.target.value)}
+                  placeholder="Second specialization area"
+                />
+              </div>
             </div>
           </div>
 
