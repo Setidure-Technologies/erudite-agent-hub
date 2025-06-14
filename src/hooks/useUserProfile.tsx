@@ -27,7 +27,17 @@ export const useUserProfile = () => {
 
       if (profileError) {
         console.error('Profile fetch error:', profileError);
-        setError('Failed to fetch user profile');
+        // Add special error message for infinite recursion
+        if (
+          profileError.message &&
+          profileError.message.includes("infinite recursion detected in policy")
+        ) {
+          setError(
+            "Platform misconfiguration: There is a permissions issue with role/profile table policies. Please contact the admin to fix the database Row Level Security settings."
+          );
+        } else {
+          setError('Failed to fetch user profile');
+        }
         return;
       }
 
