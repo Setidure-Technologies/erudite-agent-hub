@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useRoleAccess } from '@/hooks/useRoleAccess';
 import { GraduationCap, Users, BookOpen, Target } from 'lucide-react';
+import { themeColors } from '@/theme/colors';
 
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -16,54 +17,62 @@ const StudentDashboard = () => {
     : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{ background: themeColors.cardBackground, minHeight: "100vh" }}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white p-6 rounded-lg">
+      <div
+        className="p-6 rounded-lg"
+        style={{
+          background: `linear-gradient(90deg, ${themeColors.gradientFrom} 0%, ${themeColors.gradientTo} 100%)`,
+          color: themeColors.headerText,
+        }}
+      >
         <div className="flex items-center gap-3 mb-4">
-          <GraduationCap className="h-8 w-8" />
+          <GraduationCap className="h-8 w-8 text-[#6a85b6]" />
           <div>
-            <h1 className="text-3xl font-bold">Student Dashboard</h1>
-            <p className="text-blue-100">Welcome back! Continue your learning journey</p>
+            <h1 className="text-3xl font-bold" style={{ color: themeColors.headerText }}>Student Dashboard</h1>
+            <p className="text-base" style={{ color: themeColors.subText }}>
+              Welcome back! Continue your learning journey
+            </p>
           </div>
         </div>
       </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+        <Card style={{ background: themeColors.cardBackground, boxShadow: themeColors.cardShadow }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Available Agents</CardTitle>
+            <CardTitle className="text-sm font-medium" style={{ color: themeColors.headerText }}>Available Agents</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{accessibleAgents.length}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-bold" style={{ color: themeColors.accent }}>{accessibleAgents.length}</div>
+            <p className="text-xs" style={{ color: themeColors.subText }}>
               AI assistants ready to help
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ background: themeColors.cardBackground, boxShadow: themeColors.cardShadow }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Training Sessions</CardTitle>
+            <CardTitle className="text-sm font-medium" style={{ color: themeColors.headerText }}>Training Sessions</CardTitle>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{userSessions.length}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-bold" style={{ color: themeColors.accent }}>{userSessions.length}</div>
+            <p className="text-xs" style={{ color: themeColors.subText }}>
               Voice training completed
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ background: themeColors.cardBackground, boxShadow: themeColors.cardShadow }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
+            <CardTitle className="text-sm font-medium" style={{ color: themeColors.headerText }}>Average Score</CardTitle>
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{avgScore}%</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-bold" style={{ color: themeColors.accent }}>{avgScore}%</div>
+            <p className="text-xs" style={{ color: themeColors.subText }}>
               Your performance average
             </p>
           </CardContent>
@@ -71,9 +80,9 @@ const StudentDashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <Card>
+      <Card style={{ background: themeColors.cardBackground, boxShadow: themeColors.cardShadow }}>
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
+          <CardTitle style={{ color: themeColors.headerText }}>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -106,9 +115,9 @@ const StudentDashboard = () => {
       </Card>
 
       {/* Recent Sessions */}
-      <Card>
+      <Card style={{ background: themeColors.cardBackground, boxShadow: themeColors.cardShadow }}>
         <CardHeader>
-          <CardTitle>Recent Voice Training Sessions</CardTitle>
+          <CardTitle style={{ color: themeColors.headerText }}>Recent Voice Training Sessions</CardTitle>
         </CardHeader>
         <CardContent>
           {userSessions.length === 0 ? (
@@ -116,11 +125,11 @@ const StudentDashboard = () => {
           ) : (
             <div className="space-y-4">
               {userSessions.slice(0, 5).map((session) => (
-                <div key={session.id} className="border rounded-lg p-4">
+                <div key={session.id} className="border rounded-lg p-4" style={{ background: "#f1f8ff" }}>
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-medium">{session.question}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="font-medium" style={{ color: themeColors.subText }}>{session.question}</p>
+                      <p className="text-sm" style={{ color: "#6b7990" }}>
                         {new Date(session.created_at).toLocaleDateString()}
                       </p>
                     </div>
