@@ -66,6 +66,10 @@ const AppContent = () => {
             <Route path="/test-webhook" element={<Layout><TestWebhook /></Layout>} />
             <Route path="/admin" element={<Layout><AdminPanel /></Layout>} />
             <Route path="/voice-training" element={<Layout><VoiceTraining /></Layout>} />
+            <Route path="/job-recommendation" element={<Layout><JobRecommendationAgent /></Layout>} />
+            <Route path="/course-recommendation" element={<Layout><CertificateCourseAgent /></Layout>} />
+            <Route path="/resume-maker" element={<Layout><ResumeMaker /></Layout>} />
+            <Route path="/plagiarism-test" element={<Layout><PlagiarismTest /></Layout>} />
           </>
         )}
         

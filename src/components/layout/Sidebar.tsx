@@ -51,6 +51,14 @@ const Sidebar = () => {
       );
     }
 
+    // Add agent and tool pages as menu items:
+    const additionalItems = [
+      { name: 'Job Recommendation', href: '/job-recommendation', icon: Briefcase },
+      { name: 'Course Recommendation', href: '/course-recommendation', icon: BookOpen },
+      { name: 'Resume Maker', href: '/resume-maker', icon: FileText },
+      { name: 'Plagiarism Test', href: '/plagiarism-test', icon: FileMinus },
+    ];
+
     // Add accessible agent routes
     const agentItems = accessibleAgents
       .filter(agent => agent.route !== '/verify-profile')
@@ -69,7 +77,7 @@ const Sidebar = () => {
         };
       });
 
-    return [...baseNavigation, ...roleSpecificItems, ...agentItems];
+    return [...baseNavigation, ...roleSpecificItems, ...additionalItems, ...agentItems];
   };
 
   const navigation = getNavigationItems();
