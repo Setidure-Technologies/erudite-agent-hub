@@ -3,12 +3,20 @@ import { useRoleAccess } from '@/hooks/useRoleAccess';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, Loader2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import StudentDashboard from './StudentDashboard';
 import TeacherDashboard from './TeacherDashboard';
 import AdminDashboard from './AdminDashboard';
+import LandingPage from './LandingPage';
 
 const Home = () => {
+  const { user } = useAuth();
   const { userRole, loading, error, refetch } = useRoleAccess();
+
+  // Show landing page for non-authenticated users
+  if (!user) {
+    return <LandingPage />;
+  }
 
   if (loading) {
     return (
