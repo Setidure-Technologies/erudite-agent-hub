@@ -22,24 +22,30 @@ const AuthenticatedHome = () => {
   }
 
   if (error) {
-    // Make clear error cards for RLS policy error
-    const isPolicyRecursion = error.includes('permissions issue') || error.includes('policy');
+    // Message for RLS policy or missing profile errors only
+    const isPolicyError =
+      error.includes("permissions issue") ||
+      error.toLowerCase().includes("policy") ||
+      error.toLowerCase().includes("access") ||
+      error.toLowerCase().includes("no profile");
+
     return (
       <Card className="max-w-md mx-auto mt-8">
         <CardHeader>
-          <CardTitle className={`flex items-center gap-2 ${isPolicyRecursion ? "text-red-700" : "text-red-600"}`}>
+          <CardTitle className={`flex items-center gap-2 ${isPolicyError ? 'text-red-700' : 'text-red-600'}`}>
             <AlertTriangle className="h-5 w-5" />
             Error Loading Dashboard
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-gray-600">
-            {isPolicyRecursion ? (
+            {isPolicyError ? (
               <>
-                A critical permissions error is blocking access to profile and role data.<br />
-                <b>Contact your administrator to review RLS/permissions settings for the Profiles and Roles tables in Supabase.</b>
-                <br /><br />
-                (Database Error: Infinite recursion in policy for <code>roles</code> table)
+                {error.includes("no profile") ? (
+                  <>
+                    No profile found for your user. Your account may not be fully set up yet.
+                  </>
+                ) : error}
               </>
             ) : (
               error

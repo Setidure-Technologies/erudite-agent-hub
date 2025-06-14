@@ -14,8 +14,7 @@ export const useUserProfile = () => {
   const fetchUserProfile = async () => {
     try {
       setError(null);
-      
-      // Get user's complete profile with role
+
       const { data: profileData, error: profileError } = await supabase
         .from('Profiles')
         .select(`
@@ -27,17 +26,29 @@ export const useUserProfile = () => {
 
       if (profileError) {
         console.error('Profile fetch error:', profileError);
-        // Add special error message for infinite recursion
+
+        // Add special error message for infinite recursion (should not happen now)
         if (
           profileError.message &&
           profileError.message.includes("infinite recursion detected in policy")
         ) {
           setError(
-            "Platform misconfiguration: There is a permissions issue with role/profile table policies. Please contact the admin to fix the database Row Level Security settings."
+            "Platform misconfiguration: There is a permissions issue with role/profile table policies. Please contact the admin."
           );
+        } else if (profileError.code === "42501" || profileError.message?.toLowerCase().includes("permission")) {
+          setError("You do not have access to your profile. Please contact support.");
         } else {
           setError('Failed to fetch user profile');
         }
+        setUserProfile(null);
+        setUserRole(null);
+        return;
+      }
+
+      if (!profileData) {
+        setError('No profile found for your user. Your account may not be fully set up yet.');
+        setUserProfile(null);
+        setUserRole(null);
         return;
       }
 
@@ -47,6 +58,8 @@ export const useUserProfile = () => {
     } catch (error) {
       console.error('Error fetching user profile:', error);
       setError('Failed to load user data');
+      setUserProfile(null);
+      setUserRole(null);
     } finally {
       setLoading(false);
     }
@@ -54,10 +67,12 @@ export const useUserProfile = () => {
 
   useEffect(() => {
     if (user) {
+      setLoading(true);
       fetchUserProfile();
     } else {
       setLoading(false);
     }
+    // eslint-disable-next-line
   }, [user]);
 
   return {
